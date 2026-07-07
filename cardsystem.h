@@ -56,9 +56,6 @@ public:
     bool loadAllData();                    // ���ļ�������������
 
     void runMainLoop();                    // ����̨��ѭ������ʾ�˵��������û�����
-
-    string toString() const;
-    static CardTemplate fromString(const string& line);
 };
 
 #endif
