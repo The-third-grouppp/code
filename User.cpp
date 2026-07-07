@@ -1,30 +1,37 @@
-#ifndef USER_H
-#define USER_H
+#include"User.h" 
+User::User(string u, string p, Role r, string n)
+    : username(u), password(p), role(r), realName(n) {}
 
-#include <string>
-#include "enums.h"
+string User::getUsername() const { return username; }
+Role User::getRole() const { return role; }
+string User::getName() const { return realName; }
 
-using namespace std;
-
-
-class User
+bool User::changePwd(string oldPwd, string newPwd)
 {
-private:
-    string username;
-    string password;
-    Role role;
-    string realName;
-public:
-    User(string u, string p, Role r, string n);
+    if (password == oldPwd)
+    {
+        password = newPwd;
+        return true;
+    }
+    return false;
+}
 
-    string getUsername() const;
-    Role getRole() const;
-    string getName() const;
+bool User::checkPwd(string pwd) const
+{
+    return password == pwd;
+}
 
-    bool changePwd(string oldPwd, string newPwd);
-    bool checkPwd(string pwd) const;
-    bool isSuperAdmin() const;
-    void showInfo() const;
-    string toFileStr() const;
-};
-#endif
+bool User::isSuperAdmin() const
+{
+    return role == SUPER_ADMIN;
+}
+
+void User::showInfo() const
+{
+    cout << "ÕËºÅ£º" << username << " ÐÕÃû£º" << realName << endl;
+}
+
+string User::toFileStr() const
+{
+    return username + "|" + password + "|" + to_string(role) + "|" + realName;
+}
