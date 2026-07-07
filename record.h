@@ -1,6 +1,6 @@
 #ifndef RECORD_H
 #define RECORD_H
-#include "shoppingcard.h"
+#include "enums.h"  
 #include <string>
 #include <ctime>
 using namespace std;
@@ -33,5 +33,5 @@ public:
     
     string toString() const; // 序列化：将对象转成一行文本（用于写入文件）
     static Record fromString(const string& line);// 反序列化：从一行文本解析出Record对象
-}
+};
 #endif

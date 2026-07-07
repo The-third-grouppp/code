@@ -1,4 +1,5 @@
 #include"User.h" 
+#include<sstream>
 User::User(string u, string p, Role r, string n)
     : username(u), password(p), role(r), realName(n) {}
 
@@ -28,10 +29,23 @@ bool User::isSuperAdmin() const
 
 void User::showInfo() const
 {
-    cout << "ÕËºÅ£º" << username << " ÐÕÃû£º" << realName << endl;
+    cout << "ï¿½ËºÅ£ï¿½" << username << " ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << realName << endl;
 }
 
-string User::toFileStr() const
-{
-    return username + "|" + password + "|" + to_string(role) + "|" + realName;
+string User::toString() const {
+    stringstream ss;
+    ss << username << "|" << password << "|" << (int)role << "|" << realName;
+    return ss.str();
+}
+
+User User::fromString(const string& line) {
+    stringstream ss(line);
+    string username, password, realName, token;
+    int roleInt;
+    getline(ss, username, '|');
+    getline(ss, password, '|');
+    getline(ss, token, '|');
+    roleInt = stoi(token);
+    getline(ss, realName, '|');
+    return User(username, password, (Role)roleInt, realName);
 }
