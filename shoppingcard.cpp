@@ -1,4 +1,5 @@
 #include "shoppingcard.h"
+#include <sstream>
 
 ShoppingCard::ShoppingCard()
     : cardId("")
@@ -35,7 +36,7 @@ bool ShoppingCard::recharge(double amount)
     }
 
     balance += amount;
-    records.push_back(Record(RECORD_RECHARGE, amount, "¿¨Æ¬³äÖµ", time(nullptr)));
+    records.push_back(Record(RECORD_RECHARGE, amount, "ï¿½ï¿½Æ¬ï¿½ï¿½Öµ", time(nullptr)));
     return true;
 }
 bool ShoppingCard::consume(double amount)
@@ -54,7 +55,7 @@ bool ShoppingCard::consume(double amount)
     }
 
     balance -= amount;
-    records.push_back(Record(RECORD_CONSUME, amount, "¿¨Æ¬Ïû·Ñ", time(nullptr)));
+    records.push_back(Record(RECORD_CONSUME, amount, "ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½", time(nullptr)));
     return true;
 }
 
@@ -70,7 +71,7 @@ bool ShoppingCard::refund(double amount)
     }
 
     balance += amount;
-    records.push_back(Record(RECORD_REFUND, amount, "Ïû·ÑÍË¿î", time(nullptr)));
+    records.push_back(Record(RECORD_REFUND, amount, "ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½", time(nullptr)));
     return true;
 }
 
@@ -82,7 +83,7 @@ bool ShoppingCard::reportLost()
     }
 
     status = LOST;
-    records.push_back(Record(RECORD_LOST, 0.0, "¿¨Æ¬¹ÒÊ§", time(nullptr)));
+    records.push_back(Record(RECORD_LOST, 0.0, "ï¿½ï¿½Æ¬ï¿½ï¿½Ê§", time(nullptr)));
     return true;
 }
 
@@ -94,7 +95,7 @@ bool ShoppingCard::unlock()
     }
 
     status = NORMAL;
-    records.push_back(Record(RECORD_UNLOCK, 0.0, "½â³ý¹ÒÊ§", time(nullptr)));
+    records.push_back(Record(RECORD_UNLOCK, 0.0, "ï¿½ï¿½ï¿½ï¿½ï¿½Ê§", time(nullptr)));
     return true;
 }
 
@@ -106,7 +107,7 @@ bool ShoppingCard::cancelCard()
     }
 
     status = CANCELLED;
-    records.push_back(Record(RECORD_CANCEL, 0.0, "¿¨Æ¬×¢Ïú", time(nullptr)));
+    records.push_back(Record(RECORD_CANCEL, 0.0, "ï¿½ï¿½Æ¬×¢ï¿½ï¿½", time(nullptr)));
     return true;
 }
 
@@ -182,4 +183,30 @@ bool ShoppingCard::isValid() const
 bool ShoppingCard::canOperate() const
 {
     return isValid() && status == NORMAL;
+}
+
+string ShoppingCard::toString() const {
+    stringstream ss;
+    ss << cardId << "|" << holderName << "|" << balance << "|" << (int)status << "|"
+       << templateId << "|" << createTime << "|" << expireTime;
+    return ss.str();
+}
+
+ShoppingCard ShoppingCard::fromString(const string& line) {
+    stringstream ss(line);
+    string cardId, holderName, templateId, token;
+    double balance;
+    int statusInt;
+    time_t create, expire;
+    getline(ss, cardId, '|');
+    getline(ss, holderName, '|');
+    getline(ss, token, '|'); balance = stod(token);
+    getline(ss, token, '|'); statusInt = stoi(token);
+    getline(ss, templateId, '|');
+    getline(ss, token, '|'); create = stoll(token);
+    getline(ss, token, '|'); expire = stoll(token);
+    ShoppingCard card(cardId, holderName, templateId, expire);
+    card.setBalance(balance);
+    card.setStatus((CardStatus)statusInt);
+    return card;
 }

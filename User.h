@@ -23,6 +23,8 @@ public:
     bool checkPwd(string pwd) const;
     bool isSuperAdmin() const;
     void showInfo() const;
-    string toFileStr() const;
+    
+    string toString() const;
+    static User fromString(const string& line);
 };
 #endif

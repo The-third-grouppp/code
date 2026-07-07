@@ -10,52 +10,55 @@
 
 using namespace std;
 
-// ÏµÍ³×Üµ÷¶ÈÀà£º¹ÜÀíÈÝÆ÷¡¢²Ëµ¥¡¢È¨ÏÞ¡¢È«¾ÖÒµÎñÂß¼­
-// ×÷ÎªÏµÍ³µÄÃÅÃæ(Facade)£¬ÕûºÏËùÓÐ¹¦ÄÜÄ£¿é
-// Ìá¹©Í³Ò»µÄÏµÍ³Èë¿ÚºÍÒµÎñµ÷¶È
+// ÏµÍ³ï¿½Üµï¿½ï¿½ï¿½ï¿½à£ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½È¨ï¿½Þ¡ï¿½È«ï¿½ï¿½Òµï¿½ï¿½ï¿½ß¼ï¿½
+// ï¿½ï¿½ÎªÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Facade)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½Ä£ï¿½ï¿½
+// ï¿½á¹©Í³Ò»ï¿½ï¿½ÏµÍ³ï¿½ï¿½Úºï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½
 class CardSystem
 {
 private:
-    vector<User> users;                    // ÓÃ»§ÈÝÆ÷
-    vector<CardTemplate> cardTemplates;    // ¿¨Ä£°åÈÝÆ÷
-    vector<ShoppingCard> shoppingCards;    // ¹ºÎï¿¨ÈÝÆ÷
-    vector<Record> records;                // Á÷Ë®¼ÇÂ¼ÈÝÆ÷
-    FileManager fileManager;               // ÎÄ¼þ¹ÜÀíÆ÷
-    User* currentUser;                     // µ±Ç°µÇÂ¼ÓÃ»§
+    vector<User> users;                    // ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
+    vector<CardTemplate> cardTemplates;    // ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    vector<ShoppingCard> shoppingCards;    // ï¿½ï¿½ï¿½ï¿¨ï¿½ï¿½ï¿½ï¿½
+    vector<Record> records;                // ï¿½ï¿½Ë®ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½
+    FileManager fileManager;               // ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    User* currentUser;                     // ï¿½ï¿½Ç°ï¿½ï¿½Â¼ï¿½Ã»ï¿½
 
 public:
-    CardSystem();                          // ¹¹Ôìº¯Êý£¬³õÊ¼»¯ÏµÍ³
-    ~CardSystem();                         // Îö¹¹º¯Êý
+    CardSystem();                          // ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ÏµÍ³
+    ~CardSystem();                         // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    bool initSystem();                     // ÏµÍ³³õÊ¼»¯£¨¼ÓÔØÊý¾Ý¡¢´´½¨Ä¬ÈÏ¹ÜÀíÔ±µÈ£©
-    bool login(string username, string password); // ÓÃ»§µÇÂ¼
-    void logout();                         // ÓÃ»§µÇ³ö
-    User* getCurrentUser();                // »ñÈ¡µ±Ç°µÇÂ¼ÓÃ»§
+    bool initSystem();                     // ÏµÍ³ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï¹ï¿½ï¿½ï¿½Ô±ï¿½È£ï¿½
+    bool login(string username, string password); // ï¿½Ã»ï¿½ï¿½ï¿½Â¼
+    void logout();                         // ï¿½Ã»ï¿½ï¿½Ç³ï¿½
+    User* getCurrentUser();                // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Â¼ï¿½Ã»ï¿½
 
-    bool addUser(const User& user);        // Ìí¼ÓÓÃ»§
-    bool removeUser(const string& username); // É¾³ýÓÃ»§
-    bool modifyUser(const User& user);     // ÐÞ¸ÄÓÃ»§ÐÅÏ¢
-    vector<User> getAllUsers();            // »ñÈ¡ËùÓÐÓÃ»§ÁÐ±í
+    bool addUser(const User& user);        // ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½
+    bool removeUser(const string& username); // É¾ï¿½ï¿½ï¿½Ã»ï¿½
+    bool modifyUser(const User& user);     // ï¿½Þ¸ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢
+    vector<User> getAllUsers();            // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ð±ï¿½
 
-    bool addCardTemplate(const CardTemplate& tpl); // Ìí¼Ó¿¨Ä£°å
-    bool removeCardTemplate(const string& tplId);  // É¾³ý¿¨Ä£°å
-    bool modifyCardTemplate(const CardTemplate& tpl); // ÐÞ¸Ä¿¨Ä£°å
-    vector<CardTemplate> getAllCardTemplates();   // »ñÈ¡ËùÓÐ¿¨Ä£°åÁÐ±í
+    bool addCardTemplate(const CardTemplate& tpl); // ï¿½ï¿½ï¿½Ó¿ï¿½Ä£ï¿½ï¿½
+    bool removeCardTemplate(const string& tplId);  // É¾ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½
+    bool modifyCardTemplate(const CardTemplate& tpl); // ï¿½Þ¸Ä¿ï¿½Ä£ï¿½ï¿½
+    vector<CardTemplate> getAllCardTemplates();   // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ð¿ï¿½Ä£ï¿½ï¿½ï¿½Ð±ï¿½
 
-    bool createShoppingCard(const string& holderName, const string& templateId); // ´´½¨¹ºÎï¿¨
-    bool deleteShoppingCard(const string& cardId); // É¾³ý¹ºÎï¿¨
-    bool modifyShoppingCard(const ShoppingCard& card); // ÐÞ¸Ä¹ºÎï¿¨ÐÅÏ¢
-    ShoppingCard* findShoppingCard(const string& cardId); // ¸ù¾Ý¿¨ºÅ²éÕÒ¹ºÎï¿¨
-    vector<ShoppingCard> getAllShoppingCards(); // »ñÈ¡ËùÓÐ¹ºÎï¿¨ÁÐ±í
+    bool createShoppingCard(const string& holderName, const string& templateId); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿¨
+    bool deleteShoppingCard(const string& cardId); // É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿¨
+    bool modifyShoppingCard(const ShoppingCard& card); // ï¿½Þ¸Ä¹ï¿½ï¿½ï¿¨ï¿½ï¿½Ï¢
+    ShoppingCard* findShoppingCard(const string& cardId); // ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Å²ï¿½ï¿½Ò¹ï¿½ï¿½ï¿¨
+    vector<ShoppingCard> getAllShoppingCards(); // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿¨ï¿½Ð±ï¿½
 
-    bool addRecord(const Record& record);  // Ìí¼ÓÁ÷Ë®¼ÇÂ¼
-    vector<Record> getRecordsByCardId(const string& cardId); // ¸ù¾Ý¿¨ºÅ»ñÈ¡Á÷Ë®¼ÇÂ¼
-    vector<Record> getAllRecords();       // »ñÈ¡ËùÓÐÁ÷Ë®¼ÇÂ¼
+    bool addRecord(const Record& record);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë®ï¿½ï¿½Â¼
+    vector<Record> getRecordsByCardId(const string& cardId); // ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Å»ï¿½È¡ï¿½ï¿½Ë®ï¿½ï¿½Â¼
+    vector<Record> getAllRecords();       // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë®ï¿½ï¿½Â¼
 
-    bool saveAllData();                    // ±£´æËùÓÐÊý¾Ýµ½ÎÄ¼þ
-    bool loadAllData();                    // ´ÓÎÄ¼þ¼ÓÔØËùÓÐÊý¾Ý
+    bool saveAllData();                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Ä¼ï¿½
+    bool loadAllData();                    // ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    void runMainLoop();                    // ¿ØÖÆÌ¨Ö÷Ñ­»·£¬ÏÔÊ¾²Ëµ¥²¢´¦ÀíÓÃ»§ÊäÈë
+    void runMainLoop();                    // ï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
+
+    string toString() const;
+    static CardTemplate fromString(const string& line);
 };
 
 #endif
