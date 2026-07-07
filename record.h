@@ -28,7 +28,9 @@ public:
     string getOperator() const;
     time_t getTimestamp() const;
     string getRemark() const;
+
     void display() const;
+    
     string toString() const; // 序列化：将对象转成一行文本（用于写入文件）
     static Record fromString(const string& line);// 反序列化：从一行文本解析出Record对象
 }
