@@ -1,199 +1,132 @@
 #include "shoppingcard.h"
+#include <random>
+#include <sstream>
+#include <iomanip>
 
 ShoppingCard::ShoppingCard()
-    : cardId("")
-    , holderName("")
-    , balance(0.0)
-    , status(NORMAL)
-    , templateId("")
-    , createTime(time(nullptr))
-    , expireTime(0)
+    : cardId(""), holderName(""), balance(0.0), status(NORMAL),
+      phone(""), templateId(""), createTime(std::time(nullptr)), expireTime(0) {}
+
+ShoppingCard::ShoppingCard(const std::string& id, const std::string& name, const std::string& tplId,
+                           double initialBalance, const std::string& ph, std::time_t expire)
+    : cardId(id), holderName(name), balance(initialBalance), status(NORMAL),
+      phone(ph), templateId(tplId), createTime(std::time(nullptr)), expireTime(expire)
 {
+    if (initialBalance > 0)
+    {
+        addTransaction(RECHARGE, initialBalance, "¿ª¿¨³äÖµ");
+    }
 }
 
-ShoppingCard::ShoppingCard(string id, string name, string tplId, time_t expire)
-    : holderName(name)
-    , balance(0.0)
-    , status(NORMAL)
-    , templateId(tplId)
-    , createTime(time(nullptr))
-    , expireTime(expire)
+std::string ShoppingCard::generateTransactionId()
 {
-    if (checkCardIdValid(id))
-        cardId = id;
-    else
-        cardId = "";
+    static int counter = 0;
+    std::time_t now = std::time(nullptr);
+    std::tm* local = std::localtime(&now);
+    std::ostringstream oss;
+    oss << std::setw(4) << std::setfill('0') << local->tm_year + 1900
+        << std::setw(2) << std::setfill('0') << local->tm_mon + 1
+        << std::setw(2) << std::setfill('0') << local->tm_mday
+        << std::setw(6) << std::setfill('0') << ++counter;
+    return oss.str();
 }
 
-bool ShoppingCard::recharge(double amount)
+bool ShoppingCard::addTransaction(RecordType type, double amount, const std::string& description)
 {
-   
-    if (amount <= 0)
-    {
-        return false;
-    }
-    if (!canOperate())
-    {
-        return false;
-    }
-
-    balance += amount;
-    records.push_back(Record(RECORD_RECHARGE, amount, "¿¨Æ¬³äÖµ", time(nullptr)));
+    Record record(generateTransactionId(), cardId, type, amount, balance, "", description);
+    records.push_back(record);
     return true;
 }
-bool ShoppingCard::consume(double amount)
+
+bool ShoppingCard::recharge(double amount, const std::string& description)
 {
-    if (amount <= 0)
-    {
-        return false;
-    }
-    if (!canOperate())
-    {
-        return false;
-    }
-    if (balance < amount)
-    {
-        return false;
-    }
+    if (!canOperate()) return false;
+    if (amount <= 0) return false;
+
+    balance += amount;
+    return addTransaction(RECHARGE, amount, description.empty() ? "³äÖµ" : description);
+}
+
+bool ShoppingCard::consume(double amount, const std::string& description)
+{
+    if (!canOperate()) return false;
+    if (amount <= 0) return false;
+    if (balance < amount) return false;
 
     balance -= amount;
-    records.push_back(Record(RECORD_CONSUME, amount, "¿¨Æ¬Ïû·Ñ", time(nullptr)));
-    return true;
+    return addTransaction(CONSUME, amount, description.empty() ? "Ïû·Ñ" : description);
 }
 
-bool ShoppingCard::refund(double amount)
+bool ShoppingCard::refund(double amount, const std::string& description)
 {
-    if (amount <= 0)
-    {
-        return false;
-    }
-    if (!canOperate())
-    {
-        return false;
-    }
+    if (!canOperate()) return false;
+    if (amount <= 0) return false;
 
     balance += amount;
-    records.push_back(Record(RECORD_REFUND, amount, "Ïû·ÑÍË¿î", time(nullptr)));
-    return true;
+    return addTransaction(REFUND, amount, description.empty() ? "ÍË¿î" : description);
 }
 
 bool ShoppingCard::reportLost()
 {
-    if (!isValid() || status != NORMAL)
-    {
-        return false;
-    }
-
+    if (status == CANCEL || status == EXPIRE) return false;
     status = LOST;
-    records.push_back(Record(RECORD_LOST, 0.0, "¿¨Æ¬¹ÒÊ§", time(nullptr)));
+    addTransaction(LOST_OP, 0, "¹ÒÊ§");
     return true;
 }
 
 bool ShoppingCard::unlock()
 {
-    if (!isValid() || status != LOST)
-    {
-        return false;
-    }
-
+    if (status == CANCEL || status == EXPIRE) return false;
     status = NORMAL;
-    records.push_back(Record(RECORD_UNLOCK, 0.0, "½â³ý¹ÒÊ§", time(nullptr)));
+    addTransaction(UNLOCK_OP, 0, "½â³ý¹ÒÊ§");
+    return true;
+}
+
+bool ShoppingCard::freeze()
+{
+    if (status == LOST || status == EXPIRE || status == CANCEL) return false;
+    status = LOCK;
+    return true;
+}
+
+bool ShoppingCard::unfreeze()
+{
+    if (status != LOCK) return false;
+    status = NORMAL;
     return true;
 }
 
 bool ShoppingCard::cancelCard()
 {
-    if (status == CANCELLED)
-    {
-        return false;
-    }
-
-    status = CANCELLED;
-    records.push_back(Record(RECORD_CANCEL, 0.0, "¿¨Æ¬×¢Ïú", time(nullptr)));
+    status = CANCEL;
     return true;
 }
 
-string ShoppingCard::getCardId() const
-{
-    return cardId;
-}
+std::string ShoppingCard::getCardId() const { return cardId; }
+std::string ShoppingCard::getHolderName() const { return holderName; }
+double ShoppingCard::getBalance() const { return balance; }
+CardStatus ShoppingCard::getStatus() const { return status; }
+std::string ShoppingCard::getPhone() const { return phone; }
+std::string ShoppingCard::getTemplateId() const { return templateId; }
+std::time_t ShoppingCard::getCreateTime() const { return createTime; }
+std::time_t ShoppingCard::getExpireTime() const { return expireTime; }
+const std::vector<Record>& ShoppingCard::getRecords() const { return records; }
 
-string ShoppingCard::getHolderName() const
-{
-    return holderName;
-}
-
-double ShoppingCard::getBalance() const
-{
-    return balance;
-}
-
-CardStatus ShoppingCard::getStatus() const
-{
-    return status;
-}
-
-string ShoppingCard::getTemplateId() const
-{
-    return templateId;
-}
-
-time_t ShoppingCard::getCreateTime() const
-{
-    return createTime;
-}
-
-time_t ShoppingCard::getExpireTime() const
-{
-    return expireTime;
-}
-
-vector<Record> ShoppingCard::getRecords() const
-{
-    return records;
-}
-
-void ShoppingCard::setHolderName(string name)
-{
-    holderName = name;
-}
-
-void ShoppingCard::setStatus(CardStatus newStatus)
-{
-    status = newStatus;
-}
-
-void ShoppingCard::setExpireTime(time_t newExpire)
-{
-    expireTime = newExpire;
-}
+void ShoppingCard::setHolderName(const std::string& name) { holderName = name; }
+void ShoppingCard::setPhone(const std::string& ph) { phone = ph; }
+void ShoppingCard::setStatus(CardStatus newStatus) { status = newStatus; }
+void ShoppingCard::setExpireTime(std::time_t newExpire) { expireTime = newExpire; }
 
 bool ShoppingCard::isValid() const
-{   
-    if (status == CANCELLED)
-    {
-        return false;
-    }
-    if (expireTime == 0)
-    {
-        return true;
-    }
-    time_t now = time(nullptr);
-    return now < expireTime;
+{
+    if (status == EXPIRE || status == CANCEL) return false;
+    if (expireTime > 0 && std::time(nullptr) > expireTime) return false;
+    return true;
 }
 
 bool ShoppingCard::canOperate() const
 {
-    return isValid() && status == NORMAL;
-}
-bool ShoppingCard::checkCardIdValid(const string& id) const
-{
-    if (id.size() != 16)
-        return false;
-    for (char c : id)
-    {
-        if (!isdigit(c))
-            return false;
-    }
+    if (!isValid()) return false;
+    if (status == LOST || status == LOCK) return false;
     return true;
 }

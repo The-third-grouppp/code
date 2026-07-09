@@ -1,26 +1,39 @@
 #ifndef FILEMANAGER_H
 #define FILEMANAGER_H
-#include "record.h"
-#include "User.h"
+
+#include <string>
+#include <vector>
+#include "user.h"
 #include "cardtemplate.h"
 #include "shoppingcard.h"
-#include <vector>
-#include <string>
-using namespace std;
+#include "record.h"
 
-class FileManager {
+class FileManager
+{
+private:
+    std::string userFilePath;
+    std::string cardTemplateFilePath;
+    std::string shoppingCardFilePath;
+    std::string recordFilePath;
+
 public:
-    static const string RECORD_FILE;
-    static bool saveRecords(const vector<Record>& records);
-    static vector<Record> loadRecords();
-    static const string USER_FILE;
-    static const string TEMPLATE_FILE;
-    static const string CARD_FILE;
-    static bool saveUsers(const vector<User>& users);
-    static vector<User> loadUsers();
-    static bool saveTemplates(const vector<CardTemplate>& templates);
-    static vector<CardTemplate> loadTemplates();
-    static bool saveCards(const vector<ShoppingCard>& cards);
-    static vector<ShoppingCard> loadCards();
+    FileManager();
+    FileManager(const std::string& userFile, const std::string& tplFile, 
+                const std::string& cardFile, const std::string& recordFile);
+
+    bool saveUsers(const std::vector<User>& users);
+    bool loadUsers(std::vector<User>& users);
+
+    bool saveCardTemplates(const std::vector<CardTemplate>& templates);
+    bool loadCardTemplates(std::vector<CardTemplate>& templates);
+
+    bool saveShoppingCards(const std::vector<ShoppingCard>& cards);
+    bool loadShoppingCards(std::vector<ShoppingCard>& cards);
+
+    bool saveRecords(const std::vector<Record>& records);
+    bool loadRecords(std::vector<Record>& records);
+
+    std::string generateId(const std::string& prefix);
 };
+
 #endif
