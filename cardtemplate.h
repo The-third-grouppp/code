@@ -1,9 +1,6 @@
 #ifndef CARDTEMPLATE_H
 #define CARDTEMPLATE_H
 
-#ifndef CARDTEMPLATE_H
-#define CARDTEMPLATE_H
-
 #include <string>
 
 class CardTemplate
