@@ -1,123 +1,182 @@
 #include "filemanager.h"
 #include <fstream>
-#include <iostream>
-using namespace std;
+#include <sstream>
 
-const string FileManager::RECORD_FILE = "records.txt";
-const string FileManager::USER_FILE = "users.txt";
-const string FileManager::TEMPLATE_FILE = "templates.txt";
-const string FileManager::CARD_FILE = "cards.txt";
+FileManager::FileManager() 
+    : userFilePath("users.txt"), 
+      cardTemplateFilePath("templates.txt"), 
+      shoppingCardFilePath("cards.txt"), 
+      recordFilePath("records.txt") {}
 
-bool FileManager::saveRecords(const vector<Record>& records) {
-    ofstream outFile(RECORD_FILE);
-    if (!outFile.is_open()) {
-        cerr << "Error: Cannot open file " << RECORD_FILE << " for writing." << endl;
-        return false;
+FileManager::FileManager(const std::string& userFile, const std::string& tplFile, 
+                         const std::string& cardFile, const std::string& recordFile)
+    : userFilePath(userFile), cardTemplateFilePath(tplFile), 
+      shoppingCardFilePath(cardFile), recordFilePath(recordFile) {}
+
+bool FileManager::saveUsers(const std::vector<User>& users)
+{
+    std::ofstream file(userFilePath);
+    if (!file) return false;
+    for (const auto& user : users)
+    {
+        file << user.getUsername() << "|" << user.getPassword() << "|" << user.getRole() << "\n";
     }
-    for (const auto& rec : records) {
-        outFile << rec.toString() << endl;
-    }
-    outFile.close();
+    file.close();
     return true;
 }
 
-vector<Record> FileManager::loadRecords() {
-    vector<Record> records;
-    ifstream inFile(RECORD_FILE);
-    if (!inFile.is_open()) {
-        return records;
+bool FileManager::loadUsers(std::vector<User>& users)
+{
+    std::ifstream file(userFilePath);
+    if (!file) return false;
+    users.clear();
+    std::string line;
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string username, password;
+        int role;
+        std::getline(iss, username, '|');
+        std::getline(iss, password, '|');
+        iss >> role;
+        users.emplace_back(username, password, static_cast<Role>(role));
     }
-    string line;
-    while (getline(inFile, line)) {
-        if (!line.empty()) {
-            Record rec = Record::fromString(line);
-            records.push_back(rec);
-        }
-    }
-    inFile.close();
-    return records;
-}
-
-bool FileManager::saveUsers(const vector<User>& users) {
-    ofstream outFile(USER_FILE);
-    if (!outFile.is_open()) {
-        cerr << "Error: Cannot open " << USER_FILE << " for writing." << endl;
-        return false;
-    }
-    for (const auto& u : users) {
-        outFile << u.toString() << endl;
-    }
-    outFile.close();
+    file.close();
     return true;
 }
 
-vector<User> FileManager::loadUsers() {
-    vector<User> users;
-    ifstream inFile(USER_FILE);
-    if (!inFile.is_open()) {
-        return users;  
+bool FileManager::saveCardTemplates(const std::vector<CardTemplate>& templates)
+{
+    std::ofstream file(cardTemplateFilePath);
+    if (!file) return false;
+    for (const auto& tpl : templates)
+    {
+        file << tpl.getTemplateId() << "|" << tpl.getTemplateName() << "|" 
+             << tpl.getMinAmount() << "|" << tpl.getMaxAmount() << "|" 
+             << tpl.getDiscountRate() << "|" << tpl.getValidDays() << "|" 
+             << tpl.getIsActive() << "\n";
     }
-    string line;
-    while (getline(inFile, line)) {
-        if (!line.empty()) {
-            users.push_back(User::fromString(line));
-        }
-    }
-    return users;
-}
-
-bool FileManager::saveTemplates(const vector<CardTemplate>& templates) {
-    ofstream outFile(TEMPLATE_FILE);
-    if (!outFile.is_open()) {
-        cerr << "Error: Cannot open " << TEMPLATE_FILE << " for writing." << endl;
-        return false;
-    }
-    for (const auto& t : templates) {
-        outFile << t.toString() << endl;
-    }
-    outFile.close();
+    file.close();
     return true;
 }
 
-vector<CardTemplate> FileManager::loadTemplates() {
-    vector<CardTemplate> templates;
-    ifstream inFile(TEMPLATE_FILE);
-    if (!inFile.is_open()) {
-        return templates;
+bool FileManager::loadCardTemplates(std::vector<CardTemplate>& templates)
+{
+    std::ifstream file(cardTemplateFilePath);
+    if (!file) return false;
+    templates.clear();
+    std::string line;
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string id, name;
+        double minAmount, maxAmount, discountRate;
+        int validDays;
+        bool isActive;
+        std::getline(iss, id, '|');
+        std::getline(iss, name, '|');
+        iss >> minAmount; iss.ignore(1);
+        iss >> maxAmount; iss.ignore(1);
+        iss >> discountRate; iss.ignore(1);
+        iss >> validDays; iss.ignore(1);
+        iss >> isActive;
+        CardTemplate tpl(id, name, minAmount, maxAmount, discountRate, validDays);
+        tpl.setIsActive(isActive);
+        templates.push_back(tpl);
     }
-    string line;
-    while (getline(inFile, line)) {
-        if (!line.empty()) {
-            templates.push_back(CardTemplate::fromString(line));
-        }
-    }
-    return templates;
-}
-
-bool FileManager::saveCards(const vector<ShoppingCard>& cards) {
-    ofstream outFile(CARD_FILE);
-    if (!outFile.is_open()) {
-        cerr << "Error: Cannot open " << CARD_FILE << " for writing." << endl;
-        return false;
-    }
-    for (const auto& c : cards) {
-        outFile << c.toString() << endl;
-    }
-    outFile.close();
+    file.close();
     return true;
 }
 
-vector<ShoppingCard> FileManager::loadCards() {
-    vector<ShoppingCard> cards;
-    ifstream inFile(CARD_FILE);
-    if (!inFile.is_open()) {
-        return cards;
+bool FileManager::saveShoppingCards(const std::vector<ShoppingCard>& cards)
+{
+    std::ofstream file(shoppingCardFilePath);
+    if (!file) return false;
+    for (const auto& card : cards)
+    {
+        file << card.getCardId() << "|" << card.getHolderName() << "|" 
+             << card.getBalance() << "|" << card.getStatus() << "|" 
+             << card.getPhone() << "|" << card.getTemplateId() << "|" 
+             << card.getCreateTime() << "|" << card.getExpireTime() << "\n";
     }
-    string line;
-    while (getline(inFile, line)) {
-        if (!line.empty()) {
-            cards.push_back(ShoppingCard::fromString(line));
-        }
+    file.close();
+    return true;
+}
+
+bool FileManager::loadShoppingCards(std::vector<ShoppingCard>& cards)
+{
+    std::ifstream file(shoppingCardFilePath);
+    if (!file) return false;
+    cards.clear();
+    std::string line;
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string cardId, holderName, phone, templateId;
+        double balance;
+        int status;
+        std::time_t createTime, expireTime;
+        std::getline(iss, cardId, '|');
+        std::getline(iss, holderName, '|');
+        iss >> balance; iss.ignore(1);
+        iss >> status; iss.ignore(1);
+        std::getline(iss, phone, '|');
+        std::getline(iss, templateId, '|');
+        iss >> createTime; iss.ignore(1);
+        iss >> expireTime;
+        ShoppingCard card(cardId, holderName, templateId, balance, phone, expireTime);
+        card.setStatus(static_cast<CardStatus>(status));
+        cards.push_back(card);
     }
-    return cards;
+    file.close();
+    return true;
+}
+
+bool FileManager::saveRecords(const std::vector<Record>& records)
+{
+    std::ofstream file(recordFilePath);
+    if (!file) return false;
+    for (const auto& record : records)
+    {
+        file << record.getRecordId() << "|" << record.getCardId() << "|" 
+             << static_cast<int>(record.getType()) << "|" << record.getAmount() << "|" 
+             << record.getBalanceAfter() << "|" << record.getOperateTime() << "|" 
+             << record.getOperatorName() << "|" << record.getDescription() << "\n";
+    }
+    file.close();
+    return true;
+}
+
+bool FileManager::loadRecords(std::vector<Record>& records)
+{
+    std::ifstream file(recordFilePath);
+    if (!file) return false;
+    records.clear();
+    std::string line;
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string recordId, cardId, operatorName, description;
+        int type;
+        double amount, balanceAfter;
+        std::time_t operateTime;
+        std::getline(iss, recordId, '|');
+        std::getline(iss, cardId, '|');
+        iss >> type; iss.ignore(1);
+        iss >> amount; iss.ignore(1);
+        iss >> balanceAfter; iss.ignore(1);
+        iss >> operateTime; iss.ignore(1);
+        std::getline(iss, operatorName, '|');
+        std::getline(iss, description);
+        records.emplace_back(recordId, cardId, static_cast<RecordType>(type), 
+                            amount, balanceAfter, operatorName, description);
+    }
+    file.close();
+    return true;
+}
+
+std::string FileManager::generateId(const std::string& prefix)
+{
+    static int counter = 0;
+    return prefix + std::to_string(std::time(nullptr)) + std::to_string(++counter);
 }

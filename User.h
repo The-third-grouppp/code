@@ -4,27 +4,27 @@
 #include <string>
 #include "enums.h"
 
-using namespace std;
 class User
 {
 private:
-    string username;
-    string password;
+    std::string username;
+    std::string password;
     Role role;
-    string realName;
+    bool isOnline;
+
 public:
-    User(string u, string p, Role r, string n);
+    User();
+    User(const std::string& name, const std::string& pwd, Role r);
 
-    string getUsername() const;
+    bool login(const std::string& inputPwd);
+    void logout();
+    bool validate(Role requiredRole);
+
+    std::string getUsername() const;
+    std::string getPassword() const;
     Role getRole() const;
-    string getName() const;
-
-    bool changePwd(string oldPwd, string newPwd);
-    bool checkPwd(string pwd) const;
-    bool isSuperAdmin() const;
-    void showInfo() const;
-    
-    string toString() const;
-    static User fromString(const string& line);
+    bool getIsOnline() const;
+    void setPassword(const std::string& newPwd);
 };
+
 #endif

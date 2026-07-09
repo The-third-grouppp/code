@@ -1,51 +1,66 @@
-#include"User.h" 
-#include<sstream>
-User::User(string u, string p, Role r, string n)
-    : username(u), password(p), role(r), realName(n) {}
+#include "user.h"
 
-string User::getUsername() const { return username; }
-Role User::getRole() const { return role; }
-string User::getName() const { return realName; }
+User::User() : username(""), password(""), role(SUPER_ADMIN), isOnline(false) {}
 
-bool User::changePwd(string oldPwd, string newPwd)
+User::User(const std::string& name, const std::string& pwd, Role r)
+    : username(name), password(pwd), role(r), isOnline(false) {}
+
+bool User::login(const std::string& inputPwd)
 {
-    if (password == oldPwd)
+    if (password == inputPwd)
     {
-        password = newPwd;
+        isOnline = true;
         return true;
     }
     return false;
 }
 
-bool User::checkPwd(string pwd) const
+void User::logout()
 {
-    return password == pwd;
+    isOnline = false;
 }
 
-bool User::isSuperAdmin() const
+bool User::validate(Role requiredRole)
 {
-    return role == SUPER_ADMIN;
+    if (!isOnline)
+        return false;
+
+    if (role == SUPER_ADMIN)
+        return true;
+
+    if (role == CARD_ADMIN && requiredRole == CARD_ADMIN)
+        return true;
+
+    if (role == CASHIER && requiredRole == CASHIER)
+        return true;
+
+    if (role == FINANCE && requiredRole == FINANCE)
+        return true;
+
+    return false;
 }
 
-void User::showInfo() const
+std::string User::getUsername() const
 {
-    cout << "�˺ţ�" << username << " ������" << realName << endl;
+    return username;
 }
 
-string User::toString() const {
-    stringstream ss;
-    ss << username << "|" << password << "|" << (int)role << "|" << realName;
-    return ss.str();
+std::string User::getPassword() const
+{
+    return password;
 }
 
-User User::fromString(const string& line) {
-    stringstream ss(line);
-    string username, password, realName, token;
-    int roleInt;
-    getline(ss, username, '|');
-    getline(ss, password, '|');
-    getline(ss, token, '|');
-    roleInt = stoi(token);
-    getline(ss, realName, '|');
-    return User(username, password, (Role)roleInt, realName);
+Role User::getRole() const
+{
+    return role;
+}
+
+bool User::getIsOnline() const
+{
+    return isOnline;
+}
+
+void User::setPassword(const std::string& newPwd)
+{
+    password = newPwd;
 }
