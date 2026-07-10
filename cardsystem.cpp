@@ -31,7 +31,9 @@ bool CardSystem::initSystem()
     cardTemplates.emplace_back("TPL001", "普通卡", 200, 10000, 0.95, 365);
     cardTemplates.emplace_back("TPL002", "银卡", 500, 20000, 0.90, 730);
     cardTemplates.emplace_back("TPL003", "金卡", 800, 50000, 0.85, 1095);
-}}
+}
+return true;
+}
 
 bool CardSystem::login(const std::string& username, const std::string& password)
 {
