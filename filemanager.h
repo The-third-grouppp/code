@@ -32,8 +32,6 @@ public:
 
     bool saveRecords(const std::vector<Record>& records);
     bool loadRecords(std::vector<Record>& records);
-
-    std::string generateId(const std::string& prefix);
 };
 
 #endif
