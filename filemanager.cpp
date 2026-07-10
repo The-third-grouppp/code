@@ -174,9 +174,3 @@ bool FileManager::loadRecords(std::vector<Record>& records)
     file.close();
     return true;
 }
-
-std::string FileManager::generateId(const std::string& prefix)
-{
-    static int counter = 0;
-    return prefix + std::to_string(std::time(nullptr)) + std::to_string(++counter);
-}
