@@ -29,8 +29,6 @@ public:
     std::time_t getOperateTime() const;
     std::string getOperatorName() const;
     std::string getDescription() const;
-
-    std::string toString() const;
 };
 
 #endif
