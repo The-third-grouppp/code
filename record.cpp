@@ -18,15 +18,3 @@ double Record::getBalanceAfter() const { return balanceAfter; }
 std::time_t Record::getOperateTime() const { return operateTime; }
 std::string Record::getOperatorName() const { return operatorName; }
 std::string Record::getDescription() const { return description; }
-
-std::string Record::toString() const
-{
-    char timeStr[20];
-    std::strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", std::localtime(&operateTime));
-
-    std::ostringstream oss;
-    oss << recordId << "|" << cardId << "|" << static_cast<int>(type) 
-        << "|" << amount << "|" << balanceAfter << "|" << timeStr 
-        << "|" << operatorName << "|" << description;
-    return oss.str();
-}
